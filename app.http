@@ -22,5 +22,90 @@ GET http://localhost:3000/todos/?category=HOME
 GET http://localhost:3000/todos/?category=LEARNING&priority=HIGH
 ###
 
-GET http://localhost:3000/todos/3/
+GET http://localhost:3000/todos/6/
 ###
+
+GET http://localhost:3000/agenda/?date=2021-02-22
+###
+
+POST http://localhost:3000/todos/
+Content-Type: application/json
+
+{
+  "id": 6,
+  "todo": "Finalize event theme",
+  "priority": "LOW",
+  "status": "TO DO",
+  "category": "HOME",
+  "dueDate": "2021-02-22"
+}
+
+###
+
+PUT http://localhost:3000/todos/1/
+Content-Type: application/json
+
+{
+  "id": 1,
+  "todo": "Learn Node JS",
+  "priority": "HIGH",
+  "status": "DONE",
+  "category": "LEARNING",
+  "dueDate": "2021-04-04"
+}
+
+###
+
+PUT http://localhost:3000/todos/4/
+Content-Type: application/json
+
+{
+  "id": 4,
+  "todo": "Fix the bug",
+  "priority": "HIGH",
+  "status": "DONE",
+  "category": "WORK",
+  "dueDate": "2021-01-12"
+}
+
+###
+PUT http://localhost:3000/todos/3/
+Content-Type: application/json
+
+{
+  "id": 3,
+  "todo": "clean the house",
+  "priority": "LOW",
+  "status": "TO DO",
+  "category": "HOME",
+  "dueDate": "2021-02-22"
+}
+###
+
+PUT http://localhost:3000/todos/4/
+Content-Type: application/json
+
+{
+  "id": 4,
+  "todo": "Fix the bug",
+  "priority": "HIGH",
+  "status": "DONE",
+  "category": "LEARNING",
+  "dueDate": "2021-01-12"
+}
+###
+
+PUT http://localhost:3000/todos/6/
+Content-Type: application/json
+
+{
+  "id": 6,
+  "todo": "finalize event theme",
+  "priority": "LOW",
+  "status": "TO DO",
+  "category": "HOME",
+  "dueDate": "2021-02-12"
+}
+###
+
+DELETE http://localhost:3000/todos/6/

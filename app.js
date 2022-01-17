@@ -178,4 +178,168 @@ app.get("/todos/:todoId/", async (request, response) => {
   response.send(resultTodoId);
 });
 
+//API 3 agenda
+app.get("/agenda/", async (request, response) => {
+  const { date } = request.query;
+
+  const getAgendaTable = `
+    SELECT
+        *
+    FROM
+        todo
+    WHERE
+        due_date LIKE '%${date}%'
+    `;
+
+  const agendaArray = await db.all(getAgendaTable);
+  response.send(agendaArray);
+});
+
+//API 4 POST /todos/
+app.post("/todos/", async (request, response) => {
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const addTodoQuery = `
+    INSERT INTO 
+        todo (id , todo , priority , status , category , due_date)
+    VALUES ('${id}' , '${todo}' , '${priority}' , '${status}' , '${category}' , '${dueDate}')
+    `;
+  const dbResponse = await db.run(addTodoQuery);
+  const todoId = dbResponse.lastID;
+  response.send("Todo Successfully Added");
+});
+
+//API 5 SCENARIO 1 PUT status = done
+app.put("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const updateTodoStatus = `
+    UPDATE
+        todo
+    SET 
+        id = '${id}',
+        todo = '${todo}',
+        priority = '${priority}',
+        status = '${status}',
+        category = '${category}',
+        due_date = '${dueDate}'
+    WHERE 
+        id = ${todoId}
+    `;
+  await db.run(updateTodoStatus);
+  response.send("Status Updated");
+});
+
+//API 5 SCENARIO 2 PUT priority = high
+app.put("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const updatePriorityQuery = `
+    UPDATE
+        todo
+    SET 
+        id = '${id}',
+        todo = '${todo}',
+        priority = '${priority}',
+        status = '${status}',
+        category = '${category}',
+        due_date = '${dueDate}'
+    WHERE 
+        id = ${todoId}
+
+    `;
+  await db.run(updatePriorityQuery);
+  response.send("Priority Updated");
+});
+
+//API 5 SCENARIO 3 PUT todo = clean the house
+app.put("/todos/:todoId", async (request, response) => {
+  const { todoId } = request.params;
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const updateTodoQuery = `
+    UPDATE
+        todo
+    SET 
+        id = '${id}',
+        todo = '${todo}',
+        priority = '${priority}',
+        status = '${status}',
+        category = '${category}',
+        due_date = '${dueDate}'
+    WHERE 
+        id = ${todoId}
+    `;
+
+  await db.run(updateTodoQuery);
+  response.send("Todo Updated");
+});
+
+//API 5 SCENARIO 4 PUT category = learning
+app.put("/todos/:todoId", async (request, response) => {
+  const { todoId } = request.params;
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const updateCategory = `
+    UPDATE
+        todo
+    SET 
+        id = '${id}',
+        todo = '${todo}',
+        priority = '${priority}',
+        status = '${status}',
+        category = '${category}',
+        due_date = '${dueDate}'
+    WHERE 
+        id = ${todoId}
+    `;
+
+  await db.run(updateCategory);
+  response.send("Category Updated");
+});
+
+//API 5 SCENARIO 5 PUT DUE-DATE = 2021-02-12
+app.put("/todos/:todoId", async (request, response) => {
+  const { todoId } = request.params;
+  const todoDetails = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoDetails;
+
+  const updateDuedate = `
+    UPDATE
+        todo
+    SET 
+        id = '${id}',
+        todo = '${todo}',
+        priority = '${priority}',
+        status = '${status}',
+        category = '${category}',
+        due_date = '${dueDate}'
+    WHERE 
+        id = ${todoId}
+    `;
+
+  await db.run(updateDuedate);
+  response.send("Due Date Updated");
+});
+
+//API 6 DELETE
+app.delete("/todos/:todoId", async (request, response) => {
+  const { todoId } = request.params;
+  const deleteQuery = `
+    DELETE FROM
+        todo
+    WHERE 
+        id = ${todoId}
+    `;
+  await db.run(deleteQuery);
+  response.send("Todo Deleted");
+});
+
 module.exports = app;
