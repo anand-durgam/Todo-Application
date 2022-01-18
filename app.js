@@ -62,16 +62,16 @@ const hasCategoryAndPriorityProperties = (requestQuery) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// API 1 /todos/
+// API 1
 
 app.get("/todos/", async (request, response) => {
   let data = null;
-  let getTodosQuery = "";
+  let getTodoQuery = "";
   const { search_q = "", priority, status, category, work } = request.query;
 
   switch (true) {
     case hasStatusProperty(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
         SELECT
             *
         FROM
@@ -81,7 +81,7 @@ app.get("/todos/", async (request, response) => {
             AND status = '${status}';`;
       break;
     case hasPriorityProperty(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -91,7 +91,7 @@ app.get("/todos/", async (request, response) => {
         AND priority = '${priority}';`;
       break;
     case hasPriorityAndStatusProperties(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -102,7 +102,7 @@ app.get("/todos/", async (request, response) => {
         AND priority = '${priority}';`;
       break;
     case hasSearchProperties(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -111,7 +111,7 @@ app.get("/todos/", async (request, response) => {
         todo LIKE '%${search_q}%';`;
       break;
     case hasCategoryAndWorkProperties(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -122,7 +122,7 @@ app.get("/todos/", async (request, response) => {
         AND work = '${work}';`;
       break;
     case hasCategoryProperty(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -132,7 +132,7 @@ app.get("/todos/", async (request, response) => {
         AND category = '${category}';`;
       break;
     case hasCategoryAndPriorityProperties(request.query):
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -143,7 +143,7 @@ app.get("/todos/", async (request, response) => {
         AND priority = '${priority}';`;
       break;
     default:
-      getTodosQuery = `
+      getTodoQuery = `
       SELECT
         *
       FROM
@@ -152,7 +152,7 @@ app.get("/todos/", async (request, response) => {
         todo LIKE '%${search_q}%';`;
   }
 
-  data = await db.all(getTodosQuery);
+  data = await db.all(getTodoQuery);
   response.send(data);
 });
 
@@ -309,7 +309,7 @@ app.put("/todos/:todoId", async (request, response) => {
   const todoDetails = request.body;
   const { id, todo, priority, status, category, dueDate } = todoDetails;
 
-  const updateDuedate = `
+  const updateDueDate = `
     UPDATE
         todo
     SET 
@@ -323,7 +323,7 @@ app.put("/todos/:todoId", async (request, response) => {
         id = ${todoId}
     `;
 
-  await db.run(updateDuedate);
+  await db.run(updateDueDate);
   response.send("Due Date Updated");
 });
 
