@@ -27,139 +27,137 @@ const initializeDBandServer = async () => {
 
 initializeDBandServer();
 
-//get all details in todo table
-app.get("/", async (request, response) => {
-  const getAllDetails = `
-    SELECT 
-      *  
-    FROM 
-        todo`;
+////////////////////////////////////////////////////////////////
 
-  const detailsArray = await db.all(getAllDetails);
-  response.send(detailsArray);
-});
+const hasPriorityAndStatusProperties = (requestQuery) => {
+  return (
+    requestQuery.priority !== undefined && requestQuery.status !== undefined
+  );
+};
 
-// API 1 status = to do
+const hasPriorityProperty = (requestQuery) => {
+  return requestQuery.priority !== undefined;
+};
+
+const hasStatusProperty = (requestQuery) => {
+  return requestQuery.status !== undefined;
+};
+
+const hasSearchProperties = (requestQuery) => {
+  return requestQuery.search_q !== undefined;
+};
+
+const hasCategoryAndWorkProperties = (requestQuery) => {
+  return requestQuery.category !== undefined && requestQuery.work !== undefined;
+};
+
+const hasCategoryProperty = (requestQuery) => {
+  return requestQuery.category !== undefined;
+};
+
+const hasCategoryAndPriorityProperties = (requestQuery) => {
+  return (
+    requestQuery.category !== undefined && requestQuery.priority !== undefined
+  );
+};
+
+///////////////////////////////////////////////////////////////
+// API 1 /todos/
+
 app.get("/todos/", async (request, response) => {
-  const { status } = request.query;
+  let data = null;
+  let getTodosQuery = "";
+  const { search_q = "", priority, status, category, work } = request.query;
 
-  const todoStatusTable = `
-    SELECT
+  switch (true) {
+    case hasStatusProperty(request.query):
+      getTodosQuery = `
+        SELECT
+            *
+        FROM
+            todo 
+        WHERE
+            todo LIKE '%${search_q}%'
+            AND status = '${status}';`;
+      break;
+    case hasPriorityProperty(request.query):
+      getTodosQuery = `
+      SELECT
         *
-    FROM
-        todo
-    WHERE
-        status LIKE '%${status}%'
-    `;
-
-  const statusArray = await db.all(todoStatusTable);
-  response.send(statusArray);
-});
-
-// priority = high
-app.get("/todos/", async (request, response) => {
-  const { priority } = request.query;
-
-  const priorityTable = `
-    SELECT
-        *
-    FROM
-        todo
-    WHERE
-        priority LIKE '%${priority}%'
-    `;
-
-  const result = await db.all(priorityTable);
-  response.send(result);
-});
-
-// priority = high , status = in progress
-app.get("/todos/", async (request, response) => {
-  const { priority, status } = request.query;
-
-  const statusInProgressTable = `
-    SELECT
-        *
-    FROM
-        todo
-    WHERE
-        priority LIKE '%${priority}%';
-        status LIKE '%${status}%'
-    `;
-
-  const output = await db.all(statusInProgressTable);
-  response.send(output);
-});
-
-// search_q = buy
-app.get("/todos/", async (request, response) => {
-  const { search_q } = request.query;
-
-  const searchTable = `
-    SELECT
-        *
-    FROM
-        todo
-    WHERE
+      FROM
+        todo 
+      WHERE
         todo LIKE '%${search_q}%'
-    `;
-
-  const searchArray = await db.all(searchTable);
-  response.send(searchArray);
-});
-
-// category = work , status = done
-app.get("/todos/", async (request, response) => {
-  const { category, status } = request.query;
-
-  const categoryTable = `
-    SELECT
+        AND priority = '${priority}';`;
+      break;
+    case hasPriorityAndStatusProperties(request.query):
+      getTodosQuery = `
+      SELECT
         *
-    FROM
-        todo
-    WHERE
-        category LIKE '%${category}%' AND
-        status LIKE '%${status}%'
-    `;
-
-  const categoryArray = await db.all(categoryTable);
-  response.send(categoryArray);
-});
-
-// category = home
-app.get("/todos/", async (request, response) => {
-  const { category } = request.query;
-
-  const categoryArray = `
-    SELECT
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%'
+        AND status = '${status}'
+        AND priority = '${priority}';`;
+      break;
+    case hasSearchProperties(request.query):
+      getTodosQuery = `
+      SELECT
         *
-    FROM
-        todo
-    WHERE
-        category LIKE '%${category}%'
-    `;
-
-  const resultArray = await db.all(categoryArray);
-  response.send(resultArray);
-});
-
-// category = learning , priority = high
-app.get("/todos/", async (request, response) => {
-  const { category, priority } = request.query;
-
-  const categoryAndPriority = `
-    SELECT
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%';`;
+      break;
+    case hasCategoryAndWorkProperties(request.query):
+      getTodosQuery = `
+      SELECT
         *
-    FROM
-        todo
-    WHERE
-        category LIKE '%${category}%' AND
-        priority LIKE '%${priority}%'
-    `;
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%'
+        AND category = '${category}'
+        AND work = '${work}';`;
+      break;
+    case hasCategoryProperty(request.query):
+      getTodosQuery = `
+      SELECT
+        *
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%'
+        AND category = '${category}';`;
+      break;
+    case hasCategoryAndPriorityProperties(request.query):
+      getTodosQuery = `
+      SELECT
+        *
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%'
+        AND category = '${category}'
+        AND priority = '${priority}';`;
+      break;
+    default:
+      getTodosQuery = `
+      SELECT
+        *
+      FROM
+        todo 
+      WHERE
+        todo LIKE '%${search_q}%';`;
+  }
 
-  const resultOfCategoryAndPriority = await db.all(categoryAndPriority);
-  response.send(resultOfCategoryAndPriority);
+  data = await db.all(getTodosQuery);
+  response.send(data);
 });
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 //API 2 todoId
 app.get("/todos/:todoId/", async (request, response) => {
